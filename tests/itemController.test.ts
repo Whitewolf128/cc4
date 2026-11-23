@@ -1,13 +1,14 @@
 import { Request, Response, NextFunction } from "express";
 import { HTTP_STATUS } from "../src/constants/httpConstants";
-import * as itemController from "../src/api/v1/controllers/projectController";
-import * as itemService from "../src/api/v1/services/projectService";
-import { Item } from "../src/api/v1/models/projectModel";
+import * as projectController from "../src/api/v1/controllers/projectController";
+import * as projectService from "../src/api/v1/services/projectService";
+import { Project } from "../src/api/v1/models/projectModel";
 import { mock } from "node:test";
+import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 
 jest.mock("../src/api/v1/services/itemService");
 
-describe("Item Controller", () => {
+describe("Project Controller", () => {
     let mockReq: Partial<Request>;
     let mockRes: Partial<Response>;
     let mockNext: NextFunction;
@@ -17,26 +18,26 @@ describe("Item Controller", () => {
         jest.clearAllMocks();
         mockReq = { params: {}, body: {} };
         mockRes = {
-            status: jest.fn().mockReturnThis(),
-            json: jest.fn(),
+            status: jest.fn().mockReturnThis() as unknown as Response["status"],
+            json: jest.fn() as unknown as Response["json"],
         };
         mockNext = jest.fn();
     });
 
-    describe("getAllItems", () => {
+    describe("getAllProjects", () => {
         it("should handle successful operation", async () => {
-            const mockItems: Item[] = [
+            const mockProject: Project[] = [
                 {
                     id: "1",
                     name: "Test Item",
-                    description: "Test description",
+                    status: "active",
                     createdAt: new Date(),
                     updatedAt: new Date(),
                 },
             ];
-            (itemService.getAllItems as jest.Mock).mockReturnValue(mockItems);
+            (projectService.getAllProjects as jest.Mock).mockReturnValue(mockProject);
 
-            await itemController.getAllItems(
+            await projectController.getAllProjects(
                 mockReq as Request,
                 mockRes as Response,
                 mockNext
@@ -46,7 +47,7 @@ describe("Item Controller", () => {
             expect(mockRes.json).toHaveBeenCalledWith({
                 message: "Items successfully retireved",
                 status: "success",
-                data: mockItems,
+                data: mockProject,
             });
         });
     });
@@ -58,17 +59,18 @@ describe("Item Controller", () => {
                 description: "Test description",
             };
 
-            const mockItem: Item = {
+            const mockProject: Project = {
                 id: "test_id",
+                status: "active",
                 createdAt: new Date(),
                 updatedAt: new Date(),
                 ...mockBody,
             };
 
             mockReq.body = mockBody;
-            (itemService.createItem as jest.Mock).mockReturnValue(mockItem);
+            (projectService.createProject as jest.Mock).mockReturnValue(mockProject);
 
-            await itemController.createItem(
+            await projectController.createProject(
                 mockReq as Request,
                 mockRes as Response,
                 mockNext
@@ -77,7 +79,7 @@ describe("Item Controller", () => {
             expect(mockRes.status).toHaveBeenCalledWith(HTTP_STATUS.CREATED);
             expect(mockRes.json).toHaveBeenCalledWith({
                 message: "Item created successfully",
-                data: mockItem,
+                data: mockProject,
                 status: "success",
             });
         });
