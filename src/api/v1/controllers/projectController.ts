@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { HTTP_STATUS } from "../../../constants/httpConstants";
-import * as itemService from "../services/itemService";
-import { Item } from "../models/itemModel";
+import * as projectService from "../services/projectService";
+import { Project } from "../models/projectModel";
 import { successResponse } from "../models/responseModel";
 
 /**
@@ -10,15 +10,15 @@ import { successResponse } from "../models/responseModel";
  * @param res  - The express Response
  * @param next - The express middleware chaining function
  */
-export const getAllItems = async (
+export const getAllProjects = async (
     req: Request,
     res: Response,
     next: NextFunction
 ): Promise<void> => {
     try {
-        const items: Item[] = await itemService.getAllItems();
+        const projects: Project[] = await projectService.getAllProjects();
         res.status(HTTP_STATUS.OK).json(
-            successResponse(items, "Items successfully retireved")
+            successResponse(projects, "Items successfully retireved")
         );
     } catch (error: unknown) {
         next(error);
@@ -31,24 +31,22 @@ export const getAllItems = async (
  * @param res  - The express Response
  * @param next - The express middleware chaining function
  */
-export const createItem = async (
+export const createProject = async (
     req: Request,
     res: Response,
     next: NextFunction
 ): Promise<void> => {
     try {
         // Extract only the fields we want (destructuring)
-        // const name: string = req.body.name;
-        // const description: string = req.body.description;
         const { name, description, price } = req.body;
 
-        const newItem: Item = await itemService.createItem({
+        const newProject: Project = await projectService.createProject({
             name,
             description,
             price,
         });
         res.status(HTTP_STATUS.CREATED).json(
-            successResponse(newItem, "Item created successfully")
+            successResponse(newProject, "Project created successfully")
         );
     } catch (error: unknown) {
         next(error);
@@ -61,7 +59,7 @@ export const createItem = async (
  * @param res  - The express Response
  * @param next - The express middleware chaining function
  */
-export const updateItem = async (
+export const updateProject = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -71,17 +69,16 @@ export const updateItem = async (
         const { id } = req.params;
 
         // Extract update fields
-        const { name, description, price } = req.body;
+        const { name, status } = req.body;
 
         // create the update item object with the fields to be updated
-        const updatedItem: Item = await itemService.updateItem(id, {
+        const updatedProject: Project = await projectService.updateProject(id, {
             name,
-            description,
-            price,
+            status
         });
 
         res.status(HTTP_STATUS.OK).json(
-            successResponse(updatedItem, "Item updated successfully")
+            successResponse(updatedProject, "Project updated successfully")
         );
     } catch (error: unknown) {
         next(error);
@@ -94,7 +91,7 @@ export const updateItem = async (
  * @param res  - The express Response
  * @param next - The express middleware chaining function
  */
-export const deleteItem = async (
+export const deleteProject = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -102,11 +99,35 @@ export const deleteItem = async (
     try {
         const id: string = req.params.id;
 
-        await itemService.deleteItem(id);
+        await projectService.deleteProject(id);
         res.status(HTTP_STATUS.OK).json(
-            successResponse("Item successfully deleted")
+            successResponse("Project successfully deleted")
         );
     } catch (error: unknown) {
         next(error);
     }
 };
+
+export const getProjectsByIdController = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> => {
+    try {
+        const { id } = req.params;
+        const project = await projectService.getProjectById(id);
+        if (!project) {
+            res.status(HTTP_STATUS.NOT_FOUND).json({
+                message: "Project not found"
+            });
+            return;
+        }
+        res.status(HTTP_STATUS.OK).json({
+            message: "Project retrieved",
+            data: project
+        });
+    } catch (error: unknown) {
+        next(error);
+    }
+};
+

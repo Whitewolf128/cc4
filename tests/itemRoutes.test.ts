@@ -1,6 +1,6 @@
 import request from "supertest";
 import app from "../src/app";
-import * as itemController from "../src/api/v1/controllers/itemController";
+import * as itemController from "../src/api/v1/controllers/projectController";
 import { HTTP_STATUS } from "../src/constants/httpConstants";
 
 jest.mock("../src/api/v1/controllers/itemController", () => ({

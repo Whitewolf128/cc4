@@ -2,27 +2,24 @@ import Joi from "joi";
 import { RequestSchema } from "../middleware/validate";
 
 /**
- * Item schema organised by request type
+ * Status schema organised by request type
  */
-export const itemSchemas: Record<string, RequestSchema> = {
-    // POST /api/v1/items - Create new Item
+export const projectSchema: Record<string, RequestSchema> = {
+    // POST /api/v1/projects - Create new Project
     create: {
         body: Joi.object({
             name: Joi.string().required().messages({
                 "any.required": "Name is required",
                 "string.empty": "Name cannot be empty",
             }),
-            description: Joi.string().required().messages({
+            status: Joi.string().required().messages({
                 "any.required": "Description is required",
                 "string.empty": "Description cannot be empty",
-            }),
-            price: Joi.number().optional().min(0).messages({
-                "number.min": "Price must greater than 0",
             }),
         }),
     },
 
-    // PUT /api/v1/items/:id - Update Item
+    // PUT /api/v1/projects/:id - Update project
     update: {
         params: Joi.object({
             id: Joi.string().required().messages({
@@ -34,11 +31,8 @@ export const itemSchemas: Record<string, RequestSchema> = {
             name: Joi.string().optional().messages({
                 "string.empty": "Name cannot be empty",
             }),
-            description: Joi.string().optional().messages({
+            status: Joi.string().optional().messages({
                 "string.empty": "Description cannot be empty",
-            }),
-            price: Joi.number().optional().min(0).messages({
-                "number.min": "Price must greater than 0",
             }),
         }),
     },

@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import { HTTP_STATUS } from "../src/constants/httpConstants";
-import * as itemController from "../src/api/v1/controllers/itemController";
-import * as itemService from "../src/api/v1/services/itemService";
-import { Item } from "../src/api/v1/models/itemModel";
+import * as itemController from "../src/api/v1/controllers/projectController";
+import * as itemService from "../src/api/v1/services/projectService";
+import { Item } from "../src/api/v1/models/projectModel";
 import { mock } from "node:test";
 
 jest.mock("../src/api/v1/services/itemService");
