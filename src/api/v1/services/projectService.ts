@@ -2,6 +2,7 @@ import {
     QuerySnapshot,
     DocumentData,
     DocumentSnapshot,
+    Timestamp,
 } from "firebase-admin/firestore";
 import { Project } from "../models/projectModel";
 import {
@@ -27,9 +28,14 @@ export const getAllProjects = async (): Promise<Project[]> => {
             return {
                 id: doc.id,
                 ...data,
-                createdAt: data.createdAt.toDate(),
-                updatedAt: data.updatedAt.toDate(),
-            } as Project;
+                date: data.date instanceof Timestamp ? data.date.toDate() : data.date,
+                createdAt: data.createdAt instanceof Timestamp
+                    ? data.createdAt.toDate()
+                    : data.createdAt,
+                updatedAt: data.updatedAt instanceof Timestamp
+                    ? data.updatedAt.toDate()
+                    : data.updatedAt,
+            } as unknown as Project;
         });
 
         return projects;
@@ -43,14 +49,13 @@ export const getAllProjects = async (): Promise<Project[]> => {
  * @param ProjectData - The data for the new Project (name and description)
  * @returns The created Project with generated ID
  */
-export const createProject = async (ProjectData: {
+export const createProject = async (projectData: {
     name: string;
-    description: string;
-    price?: number;
+    status: string
 }): Promise<Project> => {
     const dateNow = new Date();
     const newProject: Partial<Project> = {
-        ...ProjectData,
+        ...projectData,
         createdAt: dateNow,
         updatedAt: dateNow,
     };
@@ -76,6 +81,12 @@ export const getProjectById = async (id: string): Promise<Project> => {
     const Project: Project = {
         id: doc.id,
         ...data,
+        createdAt: data?.createdAt instanceof Timestamp
+            ? data.createdAt.toDate()
+            : data?.createdAt,
+        updatedAt: data?.updatedAt instanceof Timestamp
+            ? data.updatedAt.toDate()
+            : data?.updatedAt,
     } as Project;
 
     return structuredClone(Project);
@@ -125,15 +136,4 @@ export const deleteProject = async (id: string): Promise<void> => {
     }
 
     await deleteDocument(COLLECTION, id);
-};
-
-export const getProjectsById = async (id: string): Promise<Project[]> => {
-    const project = (await getAllProjects()).find((i) => i.id === id);
-  if (!project) {
-    return [];
-  }
-
-  return [{
-    ...project
-  }];
 };

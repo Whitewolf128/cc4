@@ -7,6 +7,7 @@ type FirestoreDataTypes =
     | boolean
     | null
     | Timestamp
+    | Date
     | FieldValue;
 
 interface FieldValuePair {

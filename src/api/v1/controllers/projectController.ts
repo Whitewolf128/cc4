@@ -38,12 +38,11 @@ export const createProject = async (
 ): Promise<void> => {
     try {
         // Extract only the fields we want (destructuring)
-        const { name, description, price } = req.body;
+        const { name, status } = req.body;
 
         const newProject: Project = await projectService.createProject({
             name,
-            description,
-            price,
+            status
         });
         res.status(HTTP_STATUS.CREATED).json(
             successResponse(newProject, "Project created successfully")
